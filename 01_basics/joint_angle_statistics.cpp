@@ -53,7 +53,7 @@ int main()
     if(angle_min < lower_limit)
         lower_flag = true;
     std::cout<<std::boolalpha;              //print boolean values as words
-    std::cout<<"touch the top = " << upper_flag<<'\n'<<"touch the bottom ="<<lower_flag<<'\n';
+    std::cout<<"exceeds upper limit " << upper_flag<<'\n'<<"below lower limit "<<lower_flag<<'\n';
     std::cout<<std::noboolalpha;            //undo the change
 
     for(double angle:joint_angles)          //unsafe angle count
