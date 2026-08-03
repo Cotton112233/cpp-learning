@@ -25,27 +25,38 @@ int main()
         sum += angle;
     }
 
+    if(joint_angles.empty())
+    {
+        std::cout<<"no joint data"<<'\n';
+        return 1;
+    }
+    
     angle_avg = sum/joint_angles.size();    //calculate and show the average
     std::cout << angle_avg <<'\n';
 
-    angle_max = angle_min = joint_angles[0];
-    for(double tmp_angle : joint_angles)    //find max and min in joint_angle
+    angle_max = angle_min = joint_angles[0];    //find max and min in joint_angle
+    for(double tmp_angle : joint_angles)   
     {
         if(tmp_angle >= angle_max)
+        {
             angle_max = tmp_angle;
-
+        }    
         if(tmp_angle <= angle_min)
+        {
             angle_min = tmp_angle;
+        }
     }
     std::cout <<"angle max = " << angle_max<<'\n'<<"angle min ="<<angle_min<<'\n';
 
-    if(angle_max > upper_limit)
+    if(angle_max > upper_limit)             //show unsafe count flag
         upper_flag = true;
     if(angle_min < lower_limit)
         lower_flag = true;
-    std::cout <<"touch the top = " << upper_flag<<'\n'<<"touch the bottom ="<<lower_flag<<'\n';
+    std::cout<<std::boolalpha;              //print boolean values as words
+    std::cout<<"touch the top = " << upper_flag<<'\n'<<"touch the bottom ="<<lower_flag<<'\n';
+    std::cout<<std::noboolalpha;            //undo the change
 
-    for(double angle:joint_angles)
+    for(double angle:joint_angles)          //unsafe angle count
     {
         if(angle<lower_limit||angle>upper_limit)
             unsafe_angle_count ++;
