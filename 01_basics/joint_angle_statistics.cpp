@@ -12,6 +12,7 @@ int main()
     const double upper_limit = 3;
     bool lower_flag = false;
     bool upper_flag = false;
+    int unsafe_angle_count = 0;
 
     for(int i = 0;i<5;i++)                  //store serveral joint angles
     {
@@ -43,6 +44,13 @@ int main()
     if(angle_min < lower_limit)
         lower_flag = true;
     std::cout <<"touch the top = " << upper_flag<<'\n'<<"touch the bottom ="<<lower_flag<<'\n';
+
+    for(double angle:joint_angles)
+    {
+        if(angle<lower_limit||angle>upper_limit)
+            unsafe_angle_count ++;
+    }
+    std::cout << "unsafe angle count ="<<unsafe_angle_count<<'\n';
 
     return 0;
 }
