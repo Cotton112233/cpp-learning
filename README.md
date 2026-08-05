@@ -15,7 +15,7 @@
 - [x] 基本语法
 - [x] 判断、循环、函数
 - [x] 引用和指针基础
-- [ ] string 和 vector
+- [x] string 和 vector
 - [ ] struct 和 class
 - [ ] CMake
 - [ ] ROS 2
