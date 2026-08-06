@@ -1,21 +1,30 @@
 # C++ Learning
 
-我的 Linux、C++ 和机器人软件学习记录。
+Records my progress in learning modern C++, Linux tools, and robotics software development.
 
-## 学习环境
+## Learning Environment
 
-- WSL2
+- Windows 10 with WSL2
 - Ubuntu 24.04
 - VS Code
-- GCC
+- GCC and Github
 - C++17
 
-## 学习进度
+## Current Progress
 
-- [x] 基本语法
-- [x] 判断、循环、函数
-- [x] 引用和指针基础
-- [x] string 和 vector
-- [ ] struct 和 class
+- [x] Basic C++ syntax and data types
+- [x] Operators
+- [x] Conditional statements
+- [x] Loops
+- [x] Functions
+- [x] References and pointer basics
+- [x] `std::string`
+- [x] `std::vector`
+- [x] Basic file input with `std::ifstream`
+- [ ] Variable scope and object lifetime
+- [ ] `struct` and `class`
+- [ ] Header and source files
 - [ ] CMake
+- [ ] Debugging with GDB
+- [ ] Modern C++ resource management
 - [ ] ROS 2
