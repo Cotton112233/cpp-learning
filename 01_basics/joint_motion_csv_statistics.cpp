@@ -63,30 +63,24 @@ int main()
         angle_sum += angles[i];
         velocity_sum += velocities[i];
 
-        for (std::size_t i = 0; i < angles.size(); ++i)
+        if (angles[i] < minimum_angle)
         {
-            angle_sum += angles[i];
-            velocity_sum += velocities[i];
+            minimum_angle = angles[i];
+        }
 
-            if (angles[i] < minimum_angle)
-            {
-                minimum_angle = angles[i];
-            }
+        if (angles[i] > maximum_angle)
+        {
+            maximum_angle = angles[i];
+        }
 
-            if (angles[i] > maximum_angle)
-            {
-                maximum_angle = angles[i];
-            }
+        if (velocities[i] < minimum_velocity)
+        {
+            minimum_velocity = velocities[i];
+        }
 
-            if (velocities[i] < minimum_velocity)
-            {
-                minimum_velocity = velocities[i];
-            }
-
-            if (velocities[i] > maximum_velocity)
-            {
-                maximum_velocity = velocities[i];
-            }
+        if (velocities[i] > maximum_velocity)
+        {
+            maximum_velocity = velocities[i];
         }
     }
 
