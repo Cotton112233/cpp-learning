@@ -1,61 +1,66 @@
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <fstream>
-#include <sstream>
-#include "statistics.h"
+
+#include "joint_sample.hpp"
+#include "joint_statistics.hpp"
 
 int main()
 {
     std::ifstream input_file("joint_motion.csv");
-    if(!input_file)
+    if (!input_file)
     {
-        std::cout << "fail to open file"<<'\n';
+        std::cout << "Failed to open file.\n";
         return 1;
     }
 
     std::string line;
-    std::getline(input_file,line);//jump the header
-    std::vector<double> angles;
-    std::vector<double> velocities;
-    while(std::getline(input_file,line))
-    {
+    std::getline(input_file, line);
 
+    std::vector<JointSample> samples;
+
+    while (std::getline(input_file, line))
+    {
         if (line.empty())
         {
             continue;
         }
 
-        std::stringstream ss(line);
-
+        std::stringstream row(line);
         std::string time_text;
         std::string angle_text;
         std::string velocity_text;
-        
-        std::getline(ss,time_text,',');//ss(line) let getline can read pieces of line,','means read until meet ','
-        std::getline(ss,angle_text,',');
-        std::getline(ss,velocity_text,',');
 
-        double angle = std::stod(angle_text);
-        double velocity = std::stod(velocity_text);
+        std::getline(row, time_text, ',');
+        std::getline(row, angle_text, ',');
+        std::getline(row, velocity_text, ',');
 
-        angles.push_back(angle);
-        velocities.push_back(velocity);
+        JointSample sample{};
+        sample.time = std::stod(time_text);
+        sample.angle = std::stod(angle_text);
+        sample.velocity = std::stod(velocity_text);
 
+        samples.push_back(sample);
     }
 
-    if (angles.empty())
+    if (samples.empty())
     {
         std::cout << "No valid data found.\n";
         return 1;
     }
 
-    double average_angle{calculate_average(angles)};
-    double average_velocity{calculate_average(velocities)};
+    JointStatistics statistics;
+    statistics.calculate(samples);
 
-    std::cout << "Number of samples: " << angles.size() << '\n'
-              << "Average angle: " << average_angle << '\n'
-              << "Average velocity: " << average_velocity << '\n';
+    std::cout << "Number of samples: " << samples.size() << '\n'
+              << "Average angle: " << statistics.averageAngle() << '\n'
+              << "Minimum angle: " << statistics.minimumAngle() << '\n'
+              << "Maximum angle: " << statistics.maximumAngle() << '\n'
+              << "Average velocity: " << statistics.averageVelocity() << '\n'
+              << "Minimum velocity: " << statistics.minimumVelocity() << '\n'
+              << "Maximum velocity: " << statistics.maximumVelocity() << '\n';
 
     return 0;
 }
