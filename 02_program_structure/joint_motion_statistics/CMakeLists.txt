@@ -9,4 +9,5 @@ add_executable(
     main.cpp
     joint_replay.cpp
     joint_statistics.cpp
+    pd_controller.cpp
 )

@@ -7,6 +7,7 @@
 #include "joint_replay.hpp"
 #include "joint_sample.hpp"
 #include "joint_statistics.hpp"
+#include "pd_controller.hpp"
 
 int main()
 {
@@ -62,6 +63,16 @@ int main()
               << "Average velocity: " << statistics.averageVelocity() << '\n'
               << "Minimum velocity: " << statistics.minimumVelocity() << '\n'
               << "Maximum velocity: " << statistics.maximumVelocity() << '\n';
+
+    const double target_angle = 20.0;
+    PDController controller(2.0, 0.5);
+    const double torque_command = controller.calculate(
+        target_angle,
+        samples[0].angle,
+        samples[0].velocity
+    );
+
+    std::cout << "Torque command: " << torque_command << '\n';
 
     replaySamples(samples);
 
