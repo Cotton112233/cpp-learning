@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "joint_replay.hpp"
 #include "joint_sample.hpp"
 #include "joint_statistics.hpp"
 
@@ -61,6 +62,8 @@ int main()
               << "Average velocity: " << statistics.averageVelocity() << '\n'
               << "Minimum velocity: " << statistics.minimumVelocity() << '\n'
               << "Maximum velocity: " << statistics.maximumVelocity() << '\n';
+
+    replaySamples(samples);
 
     return 0;
 }
