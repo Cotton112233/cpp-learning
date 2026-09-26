@@ -7,7 +7,8 @@ public:
 
     double calculate(double target_angle,
                      double current_angle,
-                     double current_velocity) const;
+                     double current_velocity,
+                     double target_velocity) const;
 
 private:
     double kp_;

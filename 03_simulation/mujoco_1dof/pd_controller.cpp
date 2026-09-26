@@ -7,9 +7,10 @@ PDController::PDController(double kp, double kd)
 
 double PDController::calculate(double target_angle,
                                double current_angle,
-                               double current_velocity) const
+                               double current_velocity,
+                               double target_velocity) const
 {
     double torque = 0;
-    torque = kp_ * (target_angle - current_angle) - kd_ * current_velocity;
+    torque = kp_ * (target_angle - current_angle) + kd_ * (target_velocity - current_velocity);
     return torque;
 }

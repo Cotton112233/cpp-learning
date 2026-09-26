@@ -3,6 +3,7 @@
 #include <fstream>
 #include <ctime>
 #include <cmath>
+#include <algorithm>
 #include "pd_controller.hpp"
 #include "viewer.hpp"
 
@@ -35,6 +36,7 @@ int main()
     const int dof_address = model->jnt_dofadr[joint_id];
 
     double target_angle = 0.0;
+    double target_velocity = 0.0;
     PDController controller(500.0, 30.0);
 
     const std::time_t now = std::time(nullptr);
@@ -42,7 +44,7 @@ int main()
     char filename[100] = {};
     std::strftime(filename, sizeof(filename), "build/control_log_%Y%m%d_%H%M%S.csv", local_time);
     std::ofstream log_file(filename);
-    log_file << "time,target_angle,actual_angle,velocity,torque\n";
+    log_file << "time,target_angle,actual_angle,velocity,torque,target_velocity\n";
 
     int step = 0;
     while (viewer.isOpen())
@@ -51,16 +53,18 @@ int main()
 
         while (data->time < frame_end_time)
         {
-            target_angle = 1.5 * std::sin(data->time);
-            torque_command = controller.calculate(target_angle, data->qpos[qpos_address], data->qvel[dof_address]);
-
+            target_angle = 1.5 * std::sin(2 * (data->time));
+            target_velocity = 1.5 * 2 * std::cos(2 * (data->time));
+            torque_command = controller.calculate(target_angle, data->qpos[qpos_address], data->qvel[dof_address], target_velocity);
+            torque_command = std::clamp(torque_command, -100.0, 100.0);
             data->ctrl[actuator_id] = torque_command;
 
             log_file << data->time << ','
                     << target_angle << ','
                     << data->qpos[qpos_address] << ','
                     << data->qvel[dof_address] << ','
-                    << torque_command << '\n';
+                    << torque_command << ','
+                    << target_velocity <<'\n';
 
             if (step % 100 == 0)
             {
