@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <cmath>
 #include "pd_controller.hpp"
 #include "viewer.hpp"
 
@@ -33,8 +34,8 @@ int main()
     const int qpos_address = model->jnt_qposadr[joint_id];
     const int dof_address = model->jnt_dofadr[joint_id];
 
-    const double target_angle = 0.5;
-    PDController controller(500.0, 100.0);
+    double target_angle = 0.0;
+    PDController controller(500.0, 30.0);
 
     const std::time_t now = std::time(nullptr);
     const std::tm* local_time = std::localtime(&now);
@@ -50,6 +51,7 @@ int main()
 
         while (data->time < frame_end_time)
         {
+            target_angle = 1.5 * std::sin(data->time);
             torque_command = controller.calculate(target_angle, data->qpos[qpos_address], data->qvel[dof_address]);
 
             data->ctrl[actuator_id] = torque_command;
