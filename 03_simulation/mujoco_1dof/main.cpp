@@ -1,5 +1,7 @@
 #include <mujoco/mujoco.h>
 #include <iostream>
+#include <fstream>
+#include <ctime>
 #include "pd_controller.hpp"
 #include "viewer.hpp"
 
@@ -32,7 +34,14 @@ int main()
     const int dof_address = model->jnt_dofadr[joint_id];
 
     const double target_angle = 0.5;
-    PDController controller(50.0, 10.0);
+    PDController controller(500.0, 100.0);
+
+    const std::time_t now = std::time(nullptr);
+    const std::tm* local_time = std::localtime(&now);
+    char filename[100] = {};
+    std::strftime(filename, sizeof(filename), "build/control_log_%Y%m%d_%H%M%S.csv", local_time);
+    std::ofstream log_file(filename);
+    log_file << "time,target_angle,actual_angle,velocity,torque\n";
 
     int step = 0;
     while (viewer.isOpen())
@@ -44,7 +53,12 @@ int main()
             torque_command = controller.calculate(target_angle, data->qpos[qpos_address], data->qvel[dof_address]);
 
             data->ctrl[actuator_id] = torque_command;
-            mj_step(model, data);
+
+            log_file << data->time << ','
+                    << target_angle << ','
+                    << data->qpos[qpos_address] << ','
+                    << data->qvel[dof_address] << ','
+                    << torque_command << '\n';
 
             if (step % 100 == 0)
             {
@@ -53,6 +67,8 @@ int main()
                           << ", velocity: " << data->qvel[dof_address]
                           << ", torque: " << torque_command << '\n';
             }
+
+            mj_step(model, data);
 
             ++step;
         }
