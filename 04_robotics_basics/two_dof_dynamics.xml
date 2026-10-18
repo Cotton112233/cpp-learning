@@ -1,0 +1,27 @@
+<mujoco model="two_dof_dynamics">
+  <compiler angle="radian"/>
+  <option timestep="0.002" gravity="0 0 0"/>
+
+  <worldbody>
+    <body name="thigh" pos="0 0 1.5">
+      <joint name="hip_joint" type="hinge" axis="0 1 0"
+             damping="0" limited="false"/>
+      <geom name="thigh_geom" type="capsule"
+            fromto="0 0 0  0 0 -0.5" size="0.04" density="1000"
+            contype="0" conaffinity="0"/>
+
+      <body name="shank" pos="0 0 -0.5">
+        <joint name="knee_joint" type="hinge" axis="0 1 0"
+               damping="0" limited="false"/>
+        <geom name="shank_geom" type="capsule"
+              fromto="0 0 0  0 0 -0.5" size="0.035" density="1000"
+              contype="0" conaffinity="0"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="hip_motor" joint="hip_joint" gear="1"/>
+    <motor name="knee_motor" joint="knee_joint" gear="1"/>
+  </actuator>
+</mujoco>
