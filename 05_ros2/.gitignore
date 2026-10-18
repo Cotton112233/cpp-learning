@@ -1,0 +1,4 @@
+# colcon-generated directories (also applies inside ros2_ws)
+build/
+install/
+log/

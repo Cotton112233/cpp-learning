@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>hip_topic_demo</name>
+  <version>0.0.1</version>
+  <description>A beginner C++ hip target angle publisher and subscriber.</description>
+  <maintainer email="cotton@example.com">cotton</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
