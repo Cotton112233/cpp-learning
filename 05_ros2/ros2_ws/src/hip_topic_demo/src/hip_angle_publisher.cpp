@@ -13,6 +13,11 @@ int main(int argc, char* argv[])
     auto publisher = node->create_publisher<std_msgs::msg::Float64>(
         "/hip/target_angle", 10);
 
+    node->declare_parameter<double>("amplitude", 0.5);
+    node->declare_parameter<double>("frequency", 0.2);//外部启动参数入口
+    double amplitude = node->get_parameter("amplitude").as_double();
+    double frequency = node->get_parameter("frequency").as_double();
+    
     double t = 0.0;
     auto timer = node->create_wall_timer(
         std::chrono::milliseconds(100),
@@ -20,7 +25,7 @@ int main(int argc, char* argv[])
         {
             std_msgs::msg::Float64 message;
 
-            message.data = 0.5 * std::sin(2.0 * M_PI * 0.2 * t);
+            message.data = amplitude * std::sin(2.0 * M_PI * frequency * t);
             publisher->publish(message);
 
             t += 0.1;
