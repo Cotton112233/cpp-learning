@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>mujoco_bridge</name>
+  <version>0.0.1</version>
+  <description>A minimal headless ROS 2 to MuJoCo one-joint learning bridge.</description>
+  <maintainer email="cotton@example.com">cotton</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>ament_index_cpp</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
