@@ -2,13 +2,14 @@
 <package format="3">
   <name>mujoco_bridge</name>
   <version>0.0.1</version>
-  <description>A minimal headless ROS 2 to MuJoCo one-joint learning bridge.</description>
+  <description>Minimal headless ROS 2 to MuJoCo joint-control learning examples.</description>
   <maintainer email="cotton@example.com">cotton</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
   <depend>ament_index_cpp</depend>
 
   <export>
