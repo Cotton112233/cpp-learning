@@ -12,6 +12,11 @@
   <depend>sensor_msgs</depend>
   <depend>ament_index_cpp</depend>
 
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ros2launch</exec_depend>
+  <exec_depend>hip_topic_demo</exec_depend>
+  
   <export>
     <build_type>ament_cmake</build_type>
   </export>
