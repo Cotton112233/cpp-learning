@@ -58,4 +58,24 @@ install(TARGETS mujoco_2dof_node DESTINATION lib/${PROJECT_NAME})
 install(TARGETS mujoco_sim_node DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY models DESTINATION share/${PROJECT_NAME})
 
+add_executable(mujoco_plant_node src/mujoco_plant_node.cpp)
+ament_target_dependencies(mujoco_plant_node rclcpp std_msgs sensor_msgs ament_index_cpp)
+target_include_directories(mujoco_plant_node PRIVATE "${MUJOCO_ROOT}/include")
+target_link_libraries(mujoco_plant_node "${MUJOCO_ROOT}/lib/libmujoco.so")
+set_target_properties(mujoco_plant_node PROPERTIES
+  BUILD_RPATH "${MUJOCO_ROOT}/lib"
+  INSTALL_RPATH "${MUJOCO_ROOT}/lib"
+)
+
+add_executable(joint_pd_controller
+  src/joint_pd_controller.cpp
+  src/pd_controller.cpp
+)
+ament_target_dependencies(joint_pd_controller rclcpp std_msgs sensor_msgs)
+target_include_directories(joint_pd_controller PRIVATE include)
+
+install(TARGETS mujoco_plant_node joint_pd_controller
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 ament_package()
