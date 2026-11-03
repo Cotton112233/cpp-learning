@@ -10,7 +10,10 @@ add_compile_options(-Wall -Wextra -Wpedantic)
 find_package(ament_cmake REQUIRED)
 
 # The algorithm library has no ROS or MuJoCo dependencies.
-add_library(trajectory_planning STATIC src/step_linear.cpp)
+add_library(trajectory_planning STATIC
+  src/step_linear.cpp
+  src/polynomial.cpp
+)
 target_compile_features(trajectory_planning PUBLIC cxx_std_17)
 target_include_directories(trajectory_planning PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

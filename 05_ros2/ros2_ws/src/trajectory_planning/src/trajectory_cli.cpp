@@ -10,6 +10,7 @@
 #include <system_error>
 
 #include "trajectory_planning/step_linear.hpp"
+#include "trajectory_planning/polynomial.hpp"
 
 namespace
 {
@@ -31,13 +32,13 @@ int error(const std::string& message)
 void printHelp()
 {
     std::cout
-        << "Usage: trajectory_cli [--algorithm linear|step]"
+        << "Usage: trajectory_cli [--algorithm linear|step|cubic|quintic]"
            " [--q0 RAD] [--qf RAD] [--T SECONDS] [--dt SECONDS]\n"
         << "Defaults: --algorithm linear --q0 0 --qf 1 --T 4 --dt 0.1\n"
         << "Successful runs write only CSV: time,position,velocity,acceleration.\n"
         << "Samples include -dt, 0, interior grid points, exact T, and T+dt.\n"
         << "Step switches at t=0; T is its observation window.\n"
-        << "nan marks undefined derivatives: a step jump or linear start/stop.\n"
+        << "nan marks undefined derivatives: step/linear boundaries or cubic endpoint acceleration.\n"
         << "T and dt must be positive; at most 1000000 motion intervals.\n";
 }
 
@@ -84,9 +85,10 @@ int main(int argc, char* argv[])
         else if (option == "--dt") dt = value;
     }
 
-    if (algorithm != "linear" && algorithm != "step")
+    if (algorithm != "linear" && algorithm != "step" &&
+        algorithm != "cubic" && algorithm != "quintic")
     {
-        return error("--algorithm must be linear or step");
+        return error("--algorithm must be linear, step, cubic or quintic");
     }
     if (parameters.duration <= 0.0 || dt <= 0.0)
     {
@@ -107,11 +109,11 @@ int main(int argc, char* argv[])
     {
         return error("T + dt is outside the representable time range");
     }
-    if (algorithm == "linear" &&
+    if (algorithm != "step" &&
         (!std::isfinite(parameters.qf - parameters.q0) ||
          !std::isfinite((parameters.qf - parameters.q0) / parameters.duration)))
     {
-        return error("linear displacement or velocity is outside the numeric range");
+        return error("trajectory displacement or velocity is outside the numeric range");
     }
 
     std::cout.imbue(std::locale::classic());
@@ -120,10 +122,15 @@ int main(int argc, char* argv[])
 
     auto printSample = [&](double time)
     {
-        trajectory_planning::TrajectoryState state =
-            algorithm == "linear"
-                ? trajectory_planning::linearTrajectory(time, parameters)
-                : trajectory_planning::stepTrajectory(time, parameters);
+        trajectory_planning::TrajectoryState state;
+        if (algorithm == "linear")
+            state = trajectory_planning::linearTrajectory(time, parameters);
+        else if (algorithm == "step")
+            state = trajectory_planning::stepTrajectory(time, parameters);
+        else if (algorithm == "cubic")
+            state = trajectory_planning::cubicTrajectory(time, parameters);
+        else
+            state = trajectory_planning::quinticTrajectory(time, parameters);
         std::cout << time << ',' << state.position << ','
                   << state.velocity << ',' << state.acceleration << '\n';
     };
