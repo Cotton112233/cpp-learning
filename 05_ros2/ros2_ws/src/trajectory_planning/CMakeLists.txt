@@ -8,6 +8,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-Wall -Wextra -Wpedantic)
 
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 # The algorithm library has no ROS or MuJoCo dependencies.
 add_library(trajectory_planning STATIC
@@ -63,5 +66,16 @@ if(BUILD_TESTING)
   add_test(NAME reject_zero_dt COMMAND trajectory_cli --dt 0)
   set_tests_properties(reject_zero_dt PROPERTIES WILL_FAIL TRUE)
 endif()
+
+add_executable(trajectory_node src/trajectory_node.cpp)
+target_link_libraries(trajectory_node trajectory_planning)
+ament_target_dependencies(trajectory_node rclcpp std_msgs)
+
+add_executable(trajectory_recorder src/trajectory_recorder.cpp)
+target_link_libraries(trajectory_recorder trajectory_planning)
+ament_target_dependencies(trajectory_recorder rclcpp std_msgs sensor_msgs)
+
+install(TARGETS trajectory_node trajectory_recorder DESTINATION lib/${PROJECT_NAME})
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
 ament_package()
