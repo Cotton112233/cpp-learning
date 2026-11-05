@@ -1,7 +1,3 @@
-# C++ Learning
-
-Records my progress in learning modern C++, Linux tools, and robotics software development.
-
 # C++ & Robotics Learning
 
 A collection of my C++ and robotics learning projects.
