@@ -2,29 +2,44 @@
 
 Records my progress in learning modern C++, Linux tools, and robotics software development.
 
-## Learning Environment
+# C++ & Robotics Learning
 
-- Windows 10 with WSL2
-- Ubuntu 24.04
-- VS Code
-- GCC and Github
-- C++17
+A collection of my C++ and robotics learning projects.
 
-## Current Progress
+## Environment
+- Ubuntu 24.04 (WSL2)
+- C++17, CMake, Git
+- ROS 2 Jazzy, MuJoCo
 
-- [x] Basic C++ syntax and data types
-- [x] Operators
-- [x] Conditional statements
-- [x] Loops
-- [x] Functions
-- [x] References and pointer basics
-- [x] `std::string`
-- [x] `std::vector`
-- [x] Basic file input with `std::ifstream`
-- [ ] Variable scope and object lifetime
-- [ ] `struct` and `class`
-- [ ] Header and source files
-- [ ] CMake
-- [ ] Debugging with GDB
-- [ ] Modern C++ resource management
-- [ ] ROS 2
+## Learning Progress
+
+### 01. C++ Basics
+- Basic syntax, functions, pointers and references
+- `std::string`, `std::vector`, file I/O
+- CSV data processing
+
+### 02. Program Structure
+- Structs, classes, headers and source files
+- CMake and multi-file projects
+- Basic PD controller implementation
+
+### 03. MuJoCo Simulation
+- 1-DOF and 2-DOF robot models
+- Joint torque control and PD trajectory tracking
+- Simulation data recording
+
+### 04. Robotics Fundamentals
+- Forward kinematics
+- Jacobian and joint velocity mapping
+- Basic robot dynamics experiments
+
+### 05. ROS 2
+- Nodes, topics, publishers and subscribers
+- Timers, callbacks, parameters and launch files
+- ROS 2 + MuJoCo closed-loop control
+
+### 06. Trajectory Planning
+- Step and linear trajectories
+- Cubic and quintic polynomial trajectories
+- Trapezoidal and triangular velocity profiles
+- ROS 2 integration, CSV recording and tracking error evaluation
