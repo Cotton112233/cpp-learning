@@ -11,6 +11,7 @@
 
 #include "trajectory_planning/step_linear.hpp"
 #include "trajectory_planning/polynomial.hpp"
+#include "trajectory_planning/trapezoidal.hpp"
 
 namespace
 {
@@ -32,14 +33,15 @@ int error(const std::string& message)
 void printHelp()
 {
     std::cout
-        << "Usage: trajectory_cli [--algorithm linear|step|cubic|quintic]"
-           " [--q0 RAD] [--qf RAD] [--T SECONDS] [--dt SECONDS]\n"
+        << "Usage: trajectory_cli [--algorithm linear|step|cubic|quintic|trapezoidal]"
+           " [--q0 RAD] [--qf RAD] [--T SECONDS] [--dt SECONDS] [--vmax RAD/S] [--amax RAD/S^2]\n"
         << "Defaults: --algorithm linear --q0 0 --qf 1 --T 4 --dt 0.1\n"
+        << "Trapezoidal defaults: vmax=1, amax=1; total T is computed (--T is ignored).\n"
         << "Successful runs write only CSV: time,position,velocity,acceleration.\n"
         << "Samples include -dt, 0, interior grid points, exact T, and T+dt.\n"
         << "Step switches at t=0; T is its observation window.\n"
-        << "nan marks undefined derivatives: step/linear boundaries or cubic endpoint acceleration.\n"
-        << "T and dt must be positive; at most 1000000 motion intervals.\n";
+        << "nan marks undefined derivatives: step/linear boundaries or acceleration switches in cubic/trapezoidal.\n"
+        << "dt must be positive; fixed-time algorithms also require T > 0. Maximum 1000000 intervals.\n";
 }
 
 }  // namespace
@@ -49,6 +51,8 @@ int main(int argc, char* argv[])
     trajectory_planning::TrajectoryParameters parameters;
     std::string algorithm = "linear";
     double dt = 0.1;
+    double vmax = 1.0;
+    double amax = 1.0;
 
     for (int i = 1; i < argc; ++i)
     {
@@ -59,7 +63,8 @@ int main(int argc, char* argv[])
             return 0;
         }
         if (option != "--algorithm" && option != "--q0" && option != "--qf" &&
-            option != "--T" && option != "--dt")
+            option != "--T" && option != "--dt" &&
+            option != "--vmax" && option != "--amax")
         {
             return error("unknown option: " + option);
         }
@@ -83,14 +88,26 @@ int main(int argc, char* argv[])
         else if (option == "--qf") parameters.qf = value;
         else if (option == "--T") parameters.duration = value;
         else if (option == "--dt") dt = value;
+        else if (option == "--vmax") vmax = value;
+        else if (option == "--amax") amax = value;
     }
 
     if (algorithm != "linear" && algorithm != "step" &&
-        algorithm != "cubic" && algorithm != "quintic")
+        algorithm != "cubic" && algorithm != "quintic" && algorithm != "trapezoidal")
     {
-        return error("--algorithm must be linear, step, cubic or quintic");
+        return error("--algorithm must be linear, step, cubic, quintic or trapezoidal");
     }
-    if (parameters.duration <= 0.0 || dt <= 0.0)
+    trajectory_planning::TrapezoidalPlan plan;
+    if (algorithm == "trapezoidal")
+    {
+        if (!trajectory_planning::planTrapezoidal(
+                parameters.q0, parameters.qf, vmax, amax, plan))
+        {
+            return error("vmax and amax must be finite and > 0; trajectory must be numerically representable");
+        }
+        parameters.duration = plan.total_time;
+    }
+    if ((algorithm != "trapezoidal" && parameters.duration <= 0.0) || dt <= 0.0)
     {
         return error("--T and --dt must be > 0");
     }
@@ -109,13 +126,23 @@ int main(int argc, char* argv[])
     {
         return error("T + dt is outside the representable time range");
     }
-    if (algorithm != "step" &&
+    if (algorithm != "step" && algorithm != "trapezoidal" &&
         (!std::isfinite(parameters.qf - parameters.q0) ||
          !std::isfinite((parameters.qf - parameters.q0) / parameters.duration)))
     {
         return error("trajectory displacement or velocity is outside the numeric range");
     }
 
+    if (algorithm == "trapezoidal")
+    {
+        std::cerr << "mode=" << (parameters.q0 == parameters.qf ? "stationary" :
+                                 (plan.cruise_time > 0.0 ? "trapezoidal" : "triangular"))
+                  << " accel_time=" << plan.acceleration_time
+                  << " cruise_time=" << plan.cruise_time
+                  << " decel_time=" << plan.acceleration_time
+                  << " total_time=" << plan.total_time
+                  << " peak_velocity=" << plan.peak_velocity << '\n';
+    }
     std::cout.imbue(std::locale::classic());
     std::cout << std::setprecision(std::numeric_limits<double>::max_digits10);
     std::cout << "time,position,velocity,acceleration\n";
@@ -129,8 +156,10 @@ int main(int argc, char* argv[])
             state = trajectory_planning::stepTrajectory(time, parameters);
         else if (algorithm == "cubic")
             state = trajectory_planning::cubicTrajectory(time, parameters);
-        else
+        else if (algorithm == "quintic")
             state = trajectory_planning::quinticTrajectory(time, parameters);
+        else
+            state = trajectory_planning::sampleTrapezoidal(time, plan);
         std::cout << time << ',' << state.position << ','
                   << state.velocity << ',' << state.acceleration << '\n';
     };

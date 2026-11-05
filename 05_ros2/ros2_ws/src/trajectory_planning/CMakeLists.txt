@@ -13,6 +13,7 @@ find_package(ament_cmake REQUIRED)
 add_library(trajectory_planning STATIC
   src/step_linear.cpp
   src/polynomial.cpp
+  src/trapezoidal.cpp
 )
 target_compile_features(trajectory_planning PUBLIC cxx_std_17)
 target_include_directories(trajectory_planning PUBLIC
@@ -43,6 +44,21 @@ if(BUILD_TESTING)
     COMMAND trajectory_cli --algorithm step --q0 0 --qf 1 --T 4 --dt 1)
   set_tests_properties(step_cli PROPERTIES
     PASS_REGULAR_EXPRESSION "0,1,nan,nan")
+
+  add_test(NAME trapezoidal_cli
+    COMMAND trajectory_cli --algorithm trapezoidal --q0 0 --qf 4 --vmax 1 --amax 1 --dt 1)
+  set_tests_properties(trapezoidal_cli PROPERTIES PASS_REGULAR_EXPRESSION "2,1.5,1,0")
+
+  add_test(NAME triangular_cli
+    COMMAND trajectory_cli --algorithm trapezoidal --q0 0 --qf 1 --vmax 2 --amax 1 --dt 1)
+  set_tests_properties(triangular_cli PROPERTIES PASS_REGULAR_EXPRESSION "1,0.5,1,nan")
+
+  add_test(NAME stationary_cli
+    COMMAND trajectory_cli --algorithm trapezoidal --q0 2 --qf 2)
+  set_tests_properties(stationary_cli PROPERTIES PASS_REGULAR_EXPRESSION "0,2,0,0")
+
+  add_test(NAME reject_zero_amax COMMAND trajectory_cli --algorithm trapezoidal --amax 0)
+  set_tests_properties(reject_zero_amax PROPERTIES WILL_FAIL TRUE)
 
   add_test(NAME reject_zero_dt COMMAND trajectory_cli --dt 0)
   set_tests_properties(reject_zero_dt PROPERTIES WILL_FAIL TRUE)
