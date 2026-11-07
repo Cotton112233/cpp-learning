@@ -17,6 +17,7 @@ add_library(trajectory_planning STATIC
   src/step_linear.cpp
   src/polynomial.cpp
   src/trapezoidal.cpp
+  src/planar_ik.cpp
 )
 target_compile_features(trajectory_planning PUBLIC cxx_std_17)
 target_include_directories(trajectory_planning PUBLIC
@@ -77,5 +78,19 @@ ament_target_dependencies(trajectory_recorder rclcpp std_msgs sensor_msgs)
 
 install(TARGETS trajectory_node trajectory_recorder DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+
+add_executable(ik_cli src/ik_cli.cpp)
+target_link_libraries(ik_cli PRIVATE trajectory_planning)
+install(TARGETS ik_cli DESTINATION lib/${PROJECT_NAME})
+
+if(BUILD_TESTING)
+  add_test(NAME ik_reachable COMMAND ik_cli 0.2 -0.8)
+  add_test(NAME ik_straight COMMAND ik_cli 0 -1)
+  set_tests_properties(ik_straight PROPERTIES PASS_REGULAR_EXPRESSION "0,-1")
+  add_test(NAME ik_unreachable COMMAND ik_cli 1.2 0)
+  set_tests_properties(ik_unreachable PROPERTIES WILL_FAIL TRUE)
+  add_test(NAME ik_joint_limit COMMAND ik_cli 0 -0.2)
+  set_tests_properties(ik_joint_limit PROPERTIES WILL_FAIL TRUE)
+endif()
 
 ament_package()
