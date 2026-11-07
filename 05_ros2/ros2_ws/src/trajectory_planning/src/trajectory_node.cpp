@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
     auto hip_publisher = node->create_publisher<std_msgs::msg::Float64>("/hip/target_angle", 10);
     auto knee_publisher = node->create_publisher<std_msgs::msg::Float64>("/knee/target_angle", 10);
 
-    auto timer = node->create_wall_timer(std::chrono::milliseconds(10), [&]()
+    auto timer = node->create_wall_timer(std::chrono::milliseconds(2), [&]()
     {
         double elapsed = std::chrono::duration<double>(Clock::now() - start).count();
         auto hip_state = evaluate(elapsed, algorithm, hip);
